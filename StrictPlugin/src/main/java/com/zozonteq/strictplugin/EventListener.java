@@ -13,6 +13,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
 import java.util.List;
@@ -50,11 +51,18 @@ public class EventListener implements Listener {
             reason = RandomMessage(new String[]{"自爆を試みた","テロを起こそうとした","荒そうとした","爆発物取締罰則に違反した"});
             e.getPlayer().kickPlayer(reason);
         }
-        else if(block.getType() == Material.LAVA_BUCKET){
+        if(reason!=null){
+            Bukkit.broadcastMessage(((Player) e.getPlayer()).getDisplayName()+"は"+reason+"ので処罰された。");
+        }
+    }
+    @EventHandler
+    public void onPlaceLiquid(PlayerBucketEvent e){
+        String reason = null;
+        if(e.getBucket()==Material.LAVA){
             reason = RandomMessage(new String[]{"森林火災を発生させようとしている","地球温暖化を悪化させようとした","環境破壊に貢献した","焼き畑農業をした","マグマをぶちまけた"});
             e.getPlayer().kickPlayer(reason);
         }
-        else if(block.getType()==Material.WATER_BUCKET){
+        else if(e.getBucket()==Material.WATER){
             reason = RandomMessage(new String[]{"合法的にエンダーマンに攻撃しようとした","エンダーマンが悲しんだ","水をぶちまけた","窒息死させようとした"});
             e.getPlayer().kickPlayer(reason);
         }
@@ -77,10 +85,10 @@ public class EventListener implements Listener {
     public void onShift(PlayerToggleSneakEvent e){
         String reason = null;
         if(e.isSneaking()){
-            List<Entity> entities=e.getPlayer().getNearbyEntities(e.getPlayer().getLocation().getX(),e.getPlayer().getLocation().getX(),e.getPlayer().getLocation().getZ())
+            List<Entity> entities= e.getPlayer().getNearbyEntities(e.getPlayer().getLocation().getX(),e.getPlayer().getLocation().getX(),e.getPlayer().getLocation().getZ())
                     .stream()
                     .filter(entity -> ((Player)entity).canSee(e.getPlayer()))
-                    .filter(entity -> e.getPlayer().canSee(((Player) entity).getPlayer()))
+                    .filter(entity -> !e.getPlayer().canSee(((Player) entity).getPlayer()))
                     .collect(Collectors.toList());
             if(!entities.isEmpty()){
                 String tg = ((Player) entities.get(0)).getDisplayName();
