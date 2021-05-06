@@ -1,0 +1,4 @@
+name: StrictPlugin
+version: ${project.version}
+main: com.zozonteq.strictplugin.StrictPlugin
+api-version: 1.16
